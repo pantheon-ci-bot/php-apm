@@ -11,10 +11,6 @@ before_script:
   - phpenv config-rm xdebug.ini
   - ./.travis.scripts/compile.sh
 
-notifications:
-  email:
-    - patrickallaert@php.net
-
 script:
   - MYPHP=`which php`
   - export PATH=`dirname $MYPHP`:$PATH
