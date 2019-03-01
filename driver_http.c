@@ -122,6 +122,9 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
     }
 
+    // Add a bunch of debug info.
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
     APM_DEBUG("[HTTP driver] about to call curl_easy_perform\n");
 
     res = curl_easy_perform(curl);
