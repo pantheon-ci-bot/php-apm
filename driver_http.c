@@ -95,7 +95,7 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
              CURLFORM_COPYCONTENTS, msg ? msg : "",
              CURLFORM_END);
 
-    APM_DEBUG("[HTTP driver] msg %d\n", msg ? msg : "");
+    APM_DEBUG("[HTTP driver] msg %s\n", msg ? msg : "");
 
     curl_formadd(&formpost,
              &lastptr,
@@ -103,7 +103,7 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
              CURLFORM_COPYCONTENTS, trace_to_send,
              CURLFORM_END);
 
-    APM_DEBUG("[HTTP driver] backtrace %d\n", trace_to_send);
+    APM_DEBUG("[HTTP driver] backtrace %s\n", trace_to_send);
 
     headerlist = curl_slist_append(headerlist, buf);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
