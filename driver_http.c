@@ -43,6 +43,8 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
   CURL *curl;
   CURLcode res;
 
+  APM_DEBUG("[HTTP driver] Enter\n");
+
   curl_global_init(CURL_GLOBAL_ALL);
   curl = curl_easy_init();
   if(curl) {
@@ -53,6 +55,8 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
     char int2string[64];
     char *trace_to_send;
     size_t max_len = 0;
+
+    APM_DEBUG("[HTTP driver] curl_easy_init worked\n");
 
     if (APM_G(http_max_backtrace_length) >= 0)
         max_len = APM_G(http_max_backtrace_length);
@@ -66,11 +70,15 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
              CURLFORM_COPYCONTENTS, int2string,
              CURLFORM_END);
 
+    APM_DEBUG("[HTTP driver] type %d\n", type);
+
     curl_formadd(&formpost,
              &lastptr,
              CURLFORM_COPYNAME, "file",
              CURLFORM_COPYCONTENTS, error_filename ? error_filename : "",
              CURLFORM_END);
+
+    APM_DEBUG("[HTTP driver] file %s\n", error_filename ? error_filename : "");
 
     sprintf(int2string, "%d", error_lineno);
     curl_formadd(&formpost,
@@ -79,18 +87,24 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
              CURLFORM_COPYCONTENTS, int2string,
              CURLFORM_END);
 
+    APM_DEBUG("[HTTP driver] line %d\n", error_lineno);
+
     curl_formadd(&formpost,
              &lastptr,
              CURLFORM_COPYNAME, "message",
              CURLFORM_COPYCONTENTS, msg ? msg : "",
              CURLFORM_END);
 
+    APM_DEBUG("[HTTP driver] msg %d\n", msg ? msg : "");
+
     curl_formadd(&formpost,
              &lastptr,
              CURLFORM_COPYNAME, "backtrace",
              CURLFORM_COPYCONTENTS, trace_to_send,
              CURLFORM_END);
-    
+
+    APM_DEBUG("[HTTP driver] backtrace %d\n", trace_to_send);
+
     headerlist = curl_slist_append(headerlist, buf);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
@@ -107,9 +121,11 @@ void apm_driver_http_process_event(PROCESS_EVENT_ARGS)
       curl_easy_setopt(curl, CURLOPT_CAINFO, APM_G(http_certificate_authorities));
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
     }
-    
+
+    APM_DEBUG("[HTTP driver] about to call curl_easy_perform\n");
+
     res = curl_easy_perform(curl);
- 
+
     APM_DEBUG("[HTTP driver] Result: %s\n", curl_easy_strerror(res));
 
     /* Always clean up. */

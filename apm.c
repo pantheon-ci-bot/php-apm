@@ -565,6 +565,9 @@ static void process_event(int event_type, int type, char * error_filename, uint 
 	APM_DEBUG("Direct processing process_event loop begin\n");
 	while ((driver_entry = driver_entry->next) != NULL) {
 		if (driver_entry->driver.want_event(event_type, type, msg TSRMLS_CC)) {
+
+		    APM_DEBUG("Driver wants event\n");
+
 			driver_entry->driver.process_event(
 				type,
 				error_filename,
