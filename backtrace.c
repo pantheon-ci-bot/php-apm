@@ -29,20 +29,20 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(apm);
 
-static void debug_print_backtrace_args(zval *arg_array TSRMLS_DC, smart_str *trace_str);
-static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char depth);
-static void append_flat_hash(HashTable *ht TSRMLS_DC, smart_str *trace_str, char is_object, char depth);
+static void debug_print_backtrace_args(zval *arg_array , smart_str *trace_str);
+static void append_flat_zval_r(zval *expr , smart_str *trace_str, char depth);
+static void append_flat_hash(HashTable *ht , smart_str *trace_str, char is_object, char depth);
 
 #if PHP_VERSION_ID >= 70000
 static void debug_backtrace_get_args(zend_execute_data *call, zval *arg_array);
 #else
-static zval *debug_backtrace_get_args(void ***curpos TSRMLS_DC);
+static zval *debug_backtrace_get_args(void ***curpos );
 #endif
 
 static int append_variable(zval *expr, smart_str *trace_str);
 static char *apm_addslashes(char *str, uint length, int *new_length);
 
-void append_backtrace(smart_str *trace_str TSRMLS_DC)
+void append_backtrace(smart_str *trace_str )
 {
 	/* backtrace variables */
 	zend_execute_data *ptr, *skip;
@@ -180,7 +180,7 @@ void append_backtrace(smart_str *trace_str TSRMLS_DC)
 					class_name = ptr->function_state.function->common.scope->name;
 					class_name_len = strlen(class_name);
 				} else {
-					int dup = zend_get_object_classname(ptr->object, &class_name, &class_name_len TSRMLS_CC);
+					int dup = zend_get_object_classname(ptr->object, &class_name, &class_name_len );
 					if(!dup) {
 						free_class_name = class_name;
 					}
@@ -197,7 +197,7 @@ void append_backtrace(smart_str *trace_str TSRMLS_DC)
 			}
 			if ((! ptr->opline) || ((ptr->opline->opcode == ZEND_DO_FCALL_BY_NAME) || (ptr->opline->opcode == ZEND_DO_FCALL))) {
 				if (ptr->function_state.arguments) {
-					arg_array = debug_backtrace_get_args(&ptr->function_state.arguments TSRMLS_CC);
+					arg_array = debug_backtrace_get_args(&ptr->function_state.arguments );
 				}
 			}
 		}
@@ -275,7 +275,7 @@ void append_backtrace(smart_str *trace_str TSRMLS_DC)
 			debug_print_backtrace_args(&arg_array, trace_str);
 #else
 		if (arg_array) {
-			debug_print_backtrace_args(arg_array TSRMLS_CC, trace_str);
+			debug_print_backtrace_args(arg_array , trace_str);
 #endif
 			zval_ptr_dtor(&arg_array);
 		}
@@ -353,7 +353,7 @@ static void debug_print_backtrace_args(zval *arg_array, smart_str *trace_str)
 	} ZEND_HASH_FOREACH_END();
 }
 #else
-static void debug_print_backtrace_args(zval *arg_array TSRMLS_DC, smart_str *trace_str)
+static void debug_print_backtrace_args(zval *arg_array , smart_str *trace_str)
 {
 	zval **tmp;
 	HashPosition iterator;
@@ -364,7 +364,7 @@ static void debug_print_backtrace_args(zval *arg_array TSRMLS_DC, smart_str *tra
 		if (i++) {
 			smart_str_appendl(trace_str, ", ", 2);
 		}
-		append_flat_zval_r(*tmp TSRMLS_CC, trace_str, 0);
+		append_flat_zval_r(*tmp , trace_str, 0);
 		zend_hash_move_forward_ex(arg_array->value.ht, &iterator);
 	}
 }
@@ -372,7 +372,7 @@ static void debug_print_backtrace_args(zval *arg_array TSRMLS_DC, smart_str *tra
 
 // See void zend_print_flat_zval_r in php/Zend/zend.c for template when adapting to newer php versions
 #if PHP_VERSION_ID >= 70300
-static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char depth)
+static void append_flat_zval_r(zval *expr , smart_str *trace_str, char depth)
 {
 	if (depth >= APM_G(dump_max_depth)) {
 		smart_str_appendl(trace_str, "/* [...] */", sizeof("/* [...] */") - 1);
@@ -394,7 +394,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 				}
 				Z_PROTECT_RECURSION_P(expr);
 			}
-			append_flat_hash(Z_ARRVAL_P(expr) TSRMLS_CC, trace_str, 0, depth + 1);
+			append_flat_hash(Z_ARRVAL_P(expr) , trace_str, 0, depth + 1);
 			smart_str_appendc(trace_str, ']');
 			if (Z_REFCOUNTED_P(expr)) {
 				Z_UNPROTECT_RECURSION_P(expr);
@@ -418,7 +418,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 			}
 			if (properties) {
 				Z_PROTECT_RECURSION_P(expr);
-				append_flat_hash(properties TSRMLS_CC, trace_str, 1, depth + 1);
+				append_flat_hash(properties , trace_str, 1, depth + 1);
 				Z_UNPROTECT_RECURSION_P(expr);
 			}
 			smart_str_appendc(trace_str, ')');
@@ -430,7 +430,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 	}
 }
 #elif PHP_VERSION_ID >= 70000
-static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char depth)
+static void append_flat_zval_r(zval *expr , smart_str *trace_str, char depth)
 {
 	if (depth >= APM_G(dump_max_depth)) {
 		smart_str_appendl(trace_str, "/* [...] */", sizeof("/* [...] */") - 1);
@@ -451,7 +451,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 				Z_ARRVAL_P(expr)->u.v.nApplyCount--;
 				return;
 			}
-			append_flat_hash(Z_ARRVAL_P(expr) TSRMLS_CC, trace_str, 0, depth + 1);
+			append_flat_hash(Z_ARRVAL_P(expr) , trace_str, 0, depth + 1);
 			smart_str_appendc(trace_str, ']');
 			if (ZEND_HASH_APPLY_PROTECTION(Z_ARRVAL_P(expr))) {
 				Z_ARRVAL_P(expr)->u.v.nApplyCount--;
@@ -474,7 +474,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 			}
 			if (properties) {
 				Z_OBJ_INC_APPLY_COUNT_P(expr);
-				append_flat_hash(properties TSRMLS_CC, trace_str, 1, depth + 1);
+				append_flat_hash(properties , trace_str, 1, depth + 1);
 				Z_OBJ_DEC_APPLY_COUNT_P(expr);
 			}
 			smart_str_appendc(trace_str, ')');
@@ -486,7 +486,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 	}
 }
 #else
-static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char depth)
+static void append_flat_zval_r(zval *expr , smart_str *trace_str, char depth)
 {
 	if (depth >= APM_G(dump_max_depth)) {
 		smart_str_appendl(trace_str, "/* [...] */", sizeof("/* [...] */") - 1);
@@ -501,7 +501,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 				Z_ARRVAL_P(expr)->nApplyCount--;
 				return;
 			}
-			append_flat_hash(Z_ARRVAL_P(expr) TSRMLS_CC, trace_str, 0, depth + 1);
+			append_flat_hash(Z_ARRVAL_P(expr) , trace_str, 0, depth + 1);
 			smart_str_appendc(trace_str, ']');
 			Z_ARRVAL_P(expr)->nApplyCount--;
 			break;
@@ -511,7 +511,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 			char *class_name = NULL;
 			zend_uint clen;
 			if (Z_OBJ_HANDLER_P(expr, get_class_name)) {
-				Z_OBJ_HANDLER_P(expr, get_class_name)(expr, (const char **) &class_name, &clen, 0 TSRMLS_CC);
+				Z_OBJ_HANDLER_P(expr, get_class_name)(expr, (const char **) &class_name, &clen, 0 );
 			}
 			if (class_name) {
 				smart_str_appendl(trace_str, class_name, clen);
@@ -531,7 +531,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 					properties->nApplyCount--;
 					return;
 				}
-				append_flat_hash(properties TSRMLS_CC, trace_str, 1, depth + 1);
+				append_flat_hash(properties , trace_str, 1, depth + 1);
 				properties->nApplyCount--;
 			}
 			smart_str_appendc(trace_str, ')');
@@ -544,7 +544,7 @@ static void append_flat_zval_r(zval *expr TSRMLS_DC, smart_str *trace_str, char 
 }
 #endif
 
-static void append_flat_hash(HashTable *ht TSRMLS_DC, smart_str *trace_str, char is_object, char depth)
+static void append_flat_hash(HashTable *ht , smart_str *trace_str, char is_object, char depth)
 {
 	int i = 0;
 
@@ -619,7 +619,7 @@ static void append_flat_hash(HashTable *ht TSRMLS_DC, smart_str *trace_str, char
 		}
 
 		smart_str_appendl(trace_str, "] => ", 5);
-		append_flat_zval_r(*tmp TSRMLS_CC, trace_str, depth);
+		append_flat_zval_r(*tmp , trace_str, depth);
 		zend_hash_move_forward_ex(ht, &iterator);
 	}
 #endif
@@ -710,7 +710,7 @@ static void debug_backtrace_get_args(zend_execute_data *call, zval *arg_array)
 	}
 }
 #else
-static zval *debug_backtrace_get_args(void ***curpos TSRMLS_DC)
+static zval *debug_backtrace_get_args(void ***curpos )
 {
 	void **p = *curpos;
 	zval *arg_array, **arg;

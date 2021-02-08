@@ -138,6 +138,6 @@ int apm_driver_http_rshutdown()
 	return SUCCESS;
 }
 
-void apm_driver_http_process_stats(TSRMLS_D)
+void apm_driver_http_process_stats()
 {
 }
