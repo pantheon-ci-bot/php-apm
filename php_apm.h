@@ -19,7 +19,15 @@
 #ifndef PHP_APM_H
 #define PHP_APM_H
 
-#define PHP_APM_VERSION "2.1.3.pantheon5"
+#define PHP_APM_VERSION "2.1.3.pantheon8"
+
+#ifndef TSRMLS_D
+#define TSRMLS_D void
+#define TSRMLS_DC
+#define TSRMLS_C
+#define TSRMLS_CC
+#define TSRMLS_FETCH()
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -54,14 +62,12 @@ extern zend_module_entry apm_module_entry;
 #define PHP_APM_API
 #endif
 
-#include "TSRM/TSRM.h"
-
 #define APM_E_ALL (E_ALL | E_STRICT)
 
 #define APM_EVENT_ERROR 1
 #define APM_EVENT_EXCEPTION 2
 
-#define PROCESS_EVENT_ARGS int type, char * error_filename, uint error_lineno, char * msg, char * trace  
+#define PROCESS_EVENT_ARGS int type, char * error_filename, uint error_lineno, char * msg, char * trace
 
 typedef struct apm_event {
 	int event_type;
