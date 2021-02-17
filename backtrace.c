@@ -136,7 +136,6 @@ void append_backtrace(smart_str *trace_str )
 #if PHP_VERSION_ID >= 70000
 		/* $this may be passed into regular internal functions */
 		object = Z_OBJ(call->This);
-		zend_string function_name = null;
 		zend_function *func = null;
 		if (call->func) {
 			func = call->func;
