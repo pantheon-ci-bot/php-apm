@@ -136,17 +136,21 @@ void append_backtrace(smart_str *trace_str )
 #if PHP_VERSION_ID >= 70000
 		/* $this may be passed into regular internal functions */
 		object = Z_OBJ(call->This);
-
+		function_name = null;
+		func = null;
 		if (call->func) {
 			func = call->func;
-			function_name = (func->common.scope && func->common.scope->trait_aliases) ?
-				ZSTR_VAL(zend_resolve_method_name(
-					(object ? object->ce : func->common.scope), func)) :
-				(func->common.function_name ?
-					ZSTR_VAL(func->common.function_name) : NULL);
-		} else {
-			func = NULL;
-			function_name = NULL;
+
+			option1 = ZSTR_VAL(object ? object->ce : func->common.scope);
+
+			option2 = func->common.function_name ?
+				ZSTR_VAL(func->common.function_name) : NULL;
+
+			whichoption = (func->common.scope && func->common.scope->trait_aliases) ? option1 : option2;
+
+			if (whichoption) {
+				function_name = whichoption;
+			}
 		}
 
 		if (function_name) {

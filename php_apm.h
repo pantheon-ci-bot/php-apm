@@ -19,7 +19,7 @@
 #ifndef PHP_APM_H
 #define PHP_APM_H
 
-#define PHP_APM_VERSION "2.1.3.pantheon8"
+#define PHP_APM_VERSION "2.2.pantheon"
 
 #ifndef TSRMLS_D
 #define TSRMLS_D void
