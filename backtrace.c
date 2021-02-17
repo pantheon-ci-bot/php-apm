@@ -141,12 +141,12 @@ void append_backtrace(smart_str *trace_str )
 		if (call->func) {
 			func = call->func;
 
-			string option1 = ZSTR_VAL(object ? object->ce : func->common.scope);
+			zend_string option1 = ZSTR_VAL(object ? object->ce : func->common.scope);
 
-			string option2 = func->common.function_name ?
+			zend_string option2 = func->common.function_name ?
 				    ZSTR_VAL(func->common.function_name) : "";
 
-			string whichoption = (func->common.scope && func->common.scope->trait_aliases) ? option1 : option2;
+			zend_string whichoption = (func->common.scope && func->common.scope->trait_aliases) ? option1 : option2;
 
 			if (whichoption && whichoption != "") {
 				function_name = whichoption;
