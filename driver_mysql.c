@@ -155,7 +155,7 @@ static void apm_driver_mysql_insert_request()
 		application_esc = emalloc(application_len * 2 + 1);
 		application_len = mysql_real_escape_string(connection, application_esc, APM_G(application_id), application_len);
 	}
-	
+
 	APM_MYSQL_ESCAPE_STR(script);
 	APM_MYSQL_ESCAPE_STR(uri);
 	APM_MYSQL_ESCAPE_STR(host);
@@ -182,28 +182,37 @@ static void apm_driver_mysql_insert_request()
 		APM_RD(method_found) ? method_esc : "");
 
 	APM_DEBUG("[MySQL driver] Sending: %s\n", sql);
-	if (mysql_query(connection, sql) != 0)
-		APM_DEBUG("[MySQL driver] Error: %s\n", mysql_error(APM_G(mysql_event_db)));
+	if (mysql_query(connection, sql) != 0) {
+    APM_DEBUG("[MySQL driver] Error: %s\n", mysql_error(APM_G(mysql_event_db)));
+  }
 
 	mysql_query(connection, "SET @request_id = LAST_INSERT_ID()");
 
 	efree(sql);
-	if (application_esc)
-		efree(application_esc);
-	if (script_esc)
-		efree(script_esc);
-	if (uri_esc)
-		efree(uri_esc);
-	if (host_esc)
-		efree(host_esc);
-	if (cookies_esc)
-		efree(cookies_esc);
-	if (post_vars_esc)
-		efree(post_vars_esc);
-	if (referer_esc)
-		efree(referer_esc);
-	if (method_esc)
-		efree(method_esc);
+	if (application_esc) {
+    efree(application_esc);
+  }
+	if (script_esc) {
+    efree(script_esc);
+  }
+	if (uri_esc) {
+    efree(uri_esc);
+  }
+	if (host_esc) {
+    efree(host_esc);
+  }
+	if (cookies_esc) {
+    efree(cookies_esc);
+  }
+	if (post_vars_esc) {
+    efree(post_vars_esc);
+  }
+	if (referer_esc) {
+    efree(referer_esc);
+  }
+	if (method_esc) {
+    efree(method_esc);
+  }
 
 	APM_G(mysql_is_request_created) = 1;
 	APM_DEBUG("[MySQL driver] End insert request\n");

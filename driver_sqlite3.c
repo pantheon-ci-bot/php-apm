@@ -51,7 +51,7 @@ static int perform_db_access_checks(const char *path )
 	zval stat;
 
 	php_stat(path, strlen(path), FS_IS_DIR, &stat);
-	
+
 	is_dir = (Z_TYPE(stat) == IS_TRUE);
 	zval_dtor(&stat);
 #else
@@ -221,8 +221,9 @@ static void apm_driver_sqlite3_insert_request()
 	);
 	/* Executing SQL insert query */
 	APM_DEBUG("[SQLite driver] Sending: %s\n", sql);
-	if ((code = sqlite3_exec(connection, sql, NULL, NULL, NULL)) != SQLITE_OK)
-		APM_DEBUG("[SQLite driver] Error occured with previous query. Error code: %d\n", code);
+	if ((code = sqlite3_exec(connection, sql, NULL, NULL, NULL)) != SQLITE_OK) {
+    APM_DEBUG("[SQLite driver] Error occured with previous query. Error code: %d\n", code);
+  }
 
 	sqlite3_free(sql);
 	APM_G(sqlite3_request_id) = sqlite3_last_insert_rowid(connection);
@@ -247,8 +248,9 @@ void apm_driver_sqlite3_process_event(PROCESS_EVENT_ARGS)
 	);
 	/* Executing SQL insert query */
 	APM_DEBUG("[SQLite driver] Sending: %s\n", sql);
-	if (sqlite3_exec(connection, sql, NULL, NULL, NULL) != SQLITE_OK)
-		APM_DEBUG("[SQLite driver] Error occured with previous query\n");
+	if (sqlite3_exec(connection, sql, NULL, NULL, NULL) != SQLITE_OK) {
+    APM_DEBUG("[SQLite driver] Error occured with previous query\n");
+  }
 
 	sqlite3_free(sql);
 }
@@ -292,8 +294,9 @@ void apm_driver_sqlite3_process_stats()
 
 	/* Executing SQL insert query */
 	APM_DEBUG("[SQLite driver] Sending: %s\n", sql);
-	if (sqlite3_exec(connection, sql, NULL, NULL, NULL) != SQLITE_OK)
-		APM_DEBUG("[SQLite driver] Error occured with previous query\n");
+	if (sqlite3_exec(connection, sql, NULL, NULL, NULL) != SQLITE_OK) {
+    APM_DEBUG("[SQLite driver] Error occured with previous query\n");
+  }
 
 	sqlite3_free(sql);
 }
